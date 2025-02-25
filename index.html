@@ -1,54 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live GPS Tracker</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        h1 { color: #333; }
-        #gpsData { font-size: 1.5em; margin-top: 20px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fleet Management Dashboard</title>
+  
+  <!-- Bootstrap CSS -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  />
+  
+  <style>
+    /* Basic styling for demonstration */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .sidebar {
+      background-color: #ffffff;
+      min-height: 100vh;
+      border-right: 1px solid #eaeaea;
+      padding-top: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #333;
+    }
+    .sidebar .nav-link.active {
+      background-color: #e9ecef;
+      font-weight: 600;
+    }
+    .main-content {
+      padding: 2rem;
+    }
+    .vehicle-card {
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      margin-bottom: 0.5rem;
+    }
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .progress {
+      height: 20px;
+    }
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
+  <!-- TOP NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Fleet Management</a>
+      <button 
+        class="navbar-toggler" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#navbarSupportedContent" 
+        aria-controls="navbarSupportedContent" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div 
+        class="collapse navbar-collapse" 
+        id="navbarSupportedContent">
+        <!-- Additional navbar content (if needed) -->
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container-fluid">
+    <div class="row">
+      
+      <!-- SIDEBAR -->
+      <nav class="col-md-2 d-none d-md-block sidebar">
+        <div class="nav flex-column">
+          <a class="nav-link active" href="#">Dashboard</a>
+          <a class="nav-link" href="#">Vehicles Overview</a>
+          <a class="nav-link" href="#">Real Time Data</a>
+          <a class="nav-link" href="#">Trips</a>
+          <a class="nav-link" href="#">Maintenance</a>
+          <a class="nav-link" href="#">History</a>
+          <!-- Add more links as needed -->
+        </div>
+      </nav>
+      
+      <!-- MAIN CONTENT AREA -->
+      <main class="col-md-10 main-content">
+        <h1 class="mb-4">Real-Time Fleet Data</h1>
+        
+        <!-- ROW FOR VEHICLE CARDS -->
+        <div class="row" id="vehiclesContainer">
+          <!-- Vehicle Cards will be dynamically appended here by JavaScript -->
+        </div>
+      </main>
+    </div>
+  </div>
 
-    <h1>GPS Tracking Dashboard</h1>
-    <p>Latitude: <span id="lat">Loading...</span></p>
-    <p>Longitude: <span id="long">Loading...</span></p>
-
-    <script type="module">
-        // Import Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCoyBtYmmvv6S8QPYE5aMY4fbVmzi7cKD4",
-            authDomain: "gps-gsm-dev.firebaseapp.com",
-            databaseURL: "https://gps-gsm-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "gps-gsm-dev",
-            storageBucket: "gps-gsm-dev.firebasestorage.app",
-            messagingSenderId: "622933364583",
-            appId: "1:622933364583:web:5c13e64d95947325f169c2",
-            measurementId: "G-XRJW9L3KTL"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // Reference to GPS Data in Firebase
-        const gpsRef = ref(database, "gpsData");
-
-        // Fetch Data in Real-Time
-        onValue(gpsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById("lat").textContent = data.latitude || "No Data";
-                document.getElementById("long").textContent = data.longitude || "No Data";
-            }
+  <div class="footer">
+    <small>&copy; 2025 Fleet Management | Dashboard Demo</small>
+  </div>
+  
+  <!-- Bootstrap JS (for navbar toggling, etc.) -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
+  
+  <!-- Firebase Scripts (ES Modules) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+    
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoyBtYmmvv6S8QPYE5aMY4fbVmzi7cKD4",
+      authDomain: "gps-gsm-dev.firebaseapp.com",
+      databaseURL: "https://gps-gsm-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "gps-gsm-dev",
+      storageBucket: "gps-gsm-dev.firebasestorage.app",
+      messagingSenderId: "622933364583",
+      appId: "1:622933364583:web:5c13e64d95947325f169c2",
+      measurementId: "G-XRJW9L3KTL"
+    };
+    
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    
+    // Reference to 'vehicles' in your JSON
+    // JSON structure: 
+    // {
+    //   "vehicles": {
+    //     "vehicle_1": { ... },
+    //     "vehicle_2": { ... }
+    //   }
+    // }
+    const vehiclesRef = ref(database, "vehicles");
+    
+    // Grab the container to insert vehicle cards
+    const vehiclesContainer = document.getElementById("vehiclesContainer");
+    
+    // Listen for real-time updates
+    onValue(vehiclesRef, (snapshot) => {
+      const data = snapshot.val();
+      
+      // Clear out old content
+      vehiclesContainer.innerHTML = "";
+      
+      if (data) {
+        // Loop through each vehicle (vehicle_1, vehicle_2, etc.)
+        Object.keys(data).forEach((vehicleKey) => {
+          const vehicleData = data[vehicleKey];
+          
+          // Extract fields
+          const gps = vehicleData.gps || {};
+          const latitude = gps.latitude || "N/A";
+          const longitude = gps.longitude || "N/A";
+          const fuelLevel = vehicleData.fuelLevel || 0;
+          const batteryVoltage = vehicleData.batteryVoltage || 0;
+          const engineSpeed = vehicleData.engineSpeed || 0;
+          const temperature = vehicleData.temperature || 0;
+          const tirePressure = vehicleData.tirePressure || {};
+          const frontLeftTP = tirePressure.front_left || 0;
+          const frontRightTP = tirePressure.front_right || 0;
+          const rearLeftTP = tirePressure.rear_left || 0;
+          const rearRightTP = tirePressure.rear_right || 0;
+          const vehicleLoad = vehicleData.vehicleLoad || 0;
+          const tripsPerformed = vehicleData.tripsPerformed || 0;
+          const totalTripTime = vehicleData.totalTripTime || 0;
+          const tireChange = vehicleData.tireChange === true ? "Yes" : "No";
+          
+          // Convert totalTripTime from seconds to a more readable format (HH:MM:SS)
+          const hours = Math.floor(totalTripTime / 3600);
+          const minutes = Math.floor((totalTripTime % 3600) / 60);
+          const seconds = totalTripTime % 60;
+          const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+          
+          // Create a Bootstrap card for this vehicle
+          const card = document.createElement("div");
+          card.classList.add("col-md-6", "col-lg-4", "vehicle-card");
+          card.innerHTML = `
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">${vehicleKey.toUpperCase()}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Trip ID: ${vehicleData.tripID || "N/A"}</h6>
+                
+                <p><strong>Location:</strong> ${latitude}, ${longitude}</p>
+                
+                <!-- Fuel Level -->
+                <p><strong>Fuel Level:</strong> ${fuelLevel}%</p>
+                <div class="progress mb-2">
+                  <div 
+                    class="progress-bar bg-success" 
+                    role="progressbar" 
+                    style="width: ${fuelLevel}%" 
+                    aria-valuenow="${fuelLevel}" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+                  </div>
+                </div>
+                
+                <!-- Battery Voltage -->
+                <p><strong>Battery Voltage:</strong> ${batteryVoltage.toFixed(1)} V</p>
+                
+                <!-- Engine Speed -->
+                <p><strong>Engine Speed:</strong> ${engineSpeed} RPM</p>
+                
+                <!-- Temperature -->
+                <p><strong>Temperature:</strong> ${temperature} °C</p>
+                
+                <!-- Tire Pressures -->
+                <p><strong>Tire Pressure (FL/FR/RL/RR):</strong> 
+                  ${frontLeftTP}/${frontRightTP}/${rearLeftTP}/${rearRightTP} PSI
+                </p>
+                
+                <!-- Vehicle Load -->
+                <p><strong>Vehicle Load:</strong> ${vehicleLoad} kg</p>
+                
+                <!-- Tire Change Required -->
+                <p><strong>Tire Change:</strong> ${tireChange}</p>
+                
+                <!-- Trips -->
+                <p><strong>Trips Performed:</strong> ${tripsPerformed}</p>
+                <p><strong>Total Trip Time:</strong> ${formattedTime}</p>
+              </div>
+            </div>
+          `;
+          
+          vehiclesContainer.appendChild(card);
         });
-    </script>
-
+      } else {
+        // If no data, show a placeholder
+        vehiclesContainer.innerHTML = "<p>No vehicle data available.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
