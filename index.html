@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live GPS Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        h1 { color: #333; }
+        #gpsData { font-size: 1.5em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>GPS Tracking Dashboard</h1>
+    <p>Latitude: <span id="lat">Loading...</span></p>
+    <p>Longitude: <span id="long">Loading...</span></p>
+
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoyBtYmmvv6S8QPYE5aMY4fbVmzi7cKD4",
+            authDomain: "gps-gsm-dev.firebaseapp.com",
+            databaseURL: "https://gps-gsm-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "gps-gsm-dev",
+            storageBucket: "gps-gsm-dev.firebasestorage.app",
+            messagingSenderId: "622933364583",
+            appId: "1:622933364583:web:5c13e64d95947325f169c2",
+            measurementId: "G-XRJW9L3KTL"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Reference to GPS Data in Firebase
+        const gpsRef = ref(database, "gpsData");
+
+        // Fetch Data in Real-Time
+        onValue(gpsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById("lat").textContent = data.latitude || "No Data";
+                document.getElementById("long").textContent = data.longitude || "No Data";
+            }
+        });
+    </script>
+
+</body>
+</html>
