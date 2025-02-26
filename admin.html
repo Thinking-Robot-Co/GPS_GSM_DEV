@@ -56,23 +56,165 @@
         <!-- Vehicle Creation Form -->
         <h3>Create New Vehicle</h3>
         <form id="createVehicleForm">
-          <div class="mb-3">
-            <label for="vehicleId" class="form-label">Vehicle ID</label>
-            <input type="text" class="form-control" id="vehicleId" placeholder="e.g., vehicle_31" required>
+          <!-- Basic Info -->
+          <div class="row">
+            <div class="mb-3 col-md-4">
+              <label for="vehicleId" class="form-label">Vehicle ID</label>
+              <input type="text" class="form-control" id="vehicleId" placeholder="e.g., vehicle_31" required>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="driverName" class="form-label">Driver Name</label>
+              <input type="text" class="form-control" id="driverName" placeholder="e.g., John Doe">
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="driverId" class="form-label">Driver ID</label>
+              <input type="text" class="form-control" id="driverId" placeholder="e.g., D123">
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="latitude" class="form-label">Latitude</label>
-            <input type="number" step="any" class="form-control" id="latitude" placeholder="e.g., 18.5204" required>
+          
+          <!-- GPS & Time -->
+          <div class="row">
+            <div class="mb-3 col-md-4">
+              <label for="latitude" class="form-label">Latitude</label>
+              <input type="number" step="any" class="form-control" id="latitude" placeholder="e.g., 18.5204" required>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="longitude" class="form-label">Longitude</label>
+              <input type="number" step="any" class="form-control" id="longitude" placeholder="e.g., 73.8567" required>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="gpsTimestamp" class="form-label">GPS Timestamp</label>
+              <input type="datetime-local" class="form-control" id="gpsTimestamp">
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="longitude" class="form-label">Longitude</label>
-            <input type="number" step="any" class="form-control" id="longitude" placeholder="e.g., 73.8567" required>
+          
+          <!-- Vehicle Operational Data -->
+          <div class="row">
+            <div class="mb-3 col-md-3">
+              <label for="fuelLevel" class="form-label">Fuel Level (%)</label>
+              <input type="number" class="form-control" id="fuelLevel" placeholder="e.g., 60" required>
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="batteryVoltage" class="form-label">Battery Voltage (V)</label>
+              <input type="number" step="any" class="form-control" id="batteryVoltage" placeholder="e.g., 12.5" required>
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="vehicleLoad" class="form-label">Vehicle Load (kg)</label>
+              <input type="number" class="form-control" id="vehicleLoad" placeholder="e.g., 1200">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="odometer" class="form-label">Odometer (km)</label>
+              <input type="number" step="any" class="form-control" id="odometer" placeholder="e.g., 15000">
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="fuelLevel" class="form-label">Fuel Level (%)</label>
-            <input type="number" class="form-control" id="fuelLevel" placeholder="e.g., 60" required>
+          
+          <div class="row">
+            <div class="mb-3 col-md-3">
+              <label for="engineSpeed" class="form-label">Engine Speed (RPM)</label>
+              <input type="number" class="form-control" id="engineSpeed" placeholder="e.g., 2200">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="currentSpeed" class="form-label">Current Speed (km/h)</label>
+              <input type="number" step="any" class="form-control" id="currentSpeed" placeholder="e.g., 80">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="engineHours" class="form-label">Engine Hours</label>
+              <input type="number" step="any" class="form-control" id="engineHours" placeholder="e.g., 500">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="fuelConsumption" class="form-label">Fuel Consumption (L/100km)</label>
+              <input type="number" step="any" class="form-control" id="fuelConsumption" placeholder="e.g., 8.5">
+            </div>
           </div>
-          <!-- You can add more fields as needed -->
+          
+          <!-- Temperature & Pressure Data -->
+          <div class="row">
+            <div class="mb-3 col-md-3">
+              <label for="temperature" class="form-label">Cabin Temp (°C)</label>
+              <input type="number" step="any" class="form-control" id="temperature" placeholder="e.g., 85">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="oilPressure" class="form-label">Oil Pressure (psi)</label>
+              <input type="number" step="any" class="form-control" id="oilPressure" placeholder="e.g., 40">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="coolantTemp" class="form-label">Coolant Temp (°C)</label>
+              <input type="number" step="any" class="form-control" id="coolantTemp" placeholder="e.g., 90">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="batteryHealth" class="form-label">Battery Health (%)</label>
+              <input type="number" step="any" class="form-control" id="batteryHealth" placeholder="e.g., 95">
+            </div>
+          </div>
+          
+          <!-- Tire Data -->
+          <h4>Tire Data</h4>
+          <div class="row">
+            <div class="mb-3 col-md-3">
+              <label for="tirePressureFL" class="form-label">Tire Pressure Front Left (psi)</label>
+              <input type="number" step="any" class="form-control" id="tirePressureFL" placeholder="e.g., 32">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tirePressureFR" class="form-label">Tire Pressure Front Right (psi)</label>
+              <input type="number" step="any" class="form-control" id="tirePressureFR" placeholder="e.g., 31">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tirePressureRL" class="form-label">Tire Pressure Rear Left (psi)</label>
+              <input type="number" step="any" class="form-control" id="tirePressureRL" placeholder="e.g., 30">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tirePressureRR" class="form-label">Tire Pressure Rear Right (psi)</label>
+              <input type="number" step="any" class="form-control" id="tirePressureRR" placeholder="e.g., 32">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="mb-3 col-md-3">
+              <label for="tireTempFL" class="form-label">Tire Temp Front Left (°C)</label>
+              <input type="number" step="any" class="form-control" id="tireTempFL" placeholder="e.g., 35">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tireTempFR" class="form-label">Tire Temp Front Right (°C)</label>
+              <input type="number" step="any" class="form-control" id="tireTempFR" placeholder="e.g., 34">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tireTempRL" class="form-label">Tire Temp Rear Left (°C)</label>
+              <input type="number" step="any" class="form-control" id="tireTempRL" placeholder="e.g., 33">
+            </div>
+            <div class="mb-3 col-md-3">
+              <label for="tireTempRR" class="form-label">Tire Temp Rear Right (°C)</label>
+              <input type="number" step="any" class="form-control" id="tireTempRR" placeholder="e.g., 35">
+            </div>
+          </div>
+          
+          <!-- Other Operational Data -->
+          <div class="row">
+            <div class="mb-3 col-md-4">
+              <label for="tripsPerformed" class="form-label">Trips Performed</label>
+              <input type="number" class="form-control" id="tripsPerformed" placeholder="e.g., 5">
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="totalTripTime" class="form-label">Total Trip Time (sec)</label>
+              <input type="number" class="form-control" id="totalTripTime" placeholder="e.g., 3600">
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="tripID" class="form-label">Trip ID</label>
+              <input type="text" class="form-control" id="tripID" placeholder="e.g., TRIP_12345">
+            </div>
+          </div>
+          
+          <!-- Maintenance Info -->
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="lastServiceDate" class="form-label">Last Service Date</label>
+              <input type="date" class="form-control" id="lastServiceDate">
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="nextMaintenanceDate" class="form-label">Next Maintenance Date</label>
+              <input type="date" class="form-control" id="nextMaintenanceDate">
+            </div>
+          </div>
+          
           <button type="submit" class="btn btn-primary">Create Vehicle</button>
         </form>
         
