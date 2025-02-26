@@ -1,0 +1,46 @@
+{
+  "vehicles": {
+    "vehicle_1": {
+      "gps": {
+        "latitude": 18.5204,
+        "longitude": 73.8567
+      },
+      "fuelLevel": 60,
+      "batteryVoltage": 12.5,
+      "vehicleLoad": 1200,
+      "engineSpeed": 2200,
+      "temperature": 85,  
+      "tirePressure": {
+        "front_left": 32,
+        "front_right": 31,
+        "rear_left": 30,
+        "rear_right": 32
+      },
+      "tireChange": false,  
+      "tripsPerformed": 5,
+      "totalTripTime": 3600, 
+      "tripID": "TRIP_12345"
+    },
+    "vehicle_2": {
+      "gps": {
+        "latitude": 20.5937,
+        "longitude": 78.9629
+      },
+      "fuelLevel": 45,
+      "batteryVoltage": 11.8,
+      "vehicleLoad": 1000,
+      "engineSpeed": 1800,
+      "temperature": 90,
+      "tirePressure": {
+        "front_left": 34,
+        "front_right": 33,
+        "rear_left": 32,
+        "rear_right": 34
+      },
+      "tireChange": true,
+      "tripsPerformed": 8,
+      "totalTripTime": 5400,
+      "tripID": "TRIP_54321"
+    }
+  }
+}
