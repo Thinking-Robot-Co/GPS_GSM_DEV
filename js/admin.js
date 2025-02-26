@@ -9,31 +9,69 @@ createVehicleForm.addEventListener("submit", (e) => {
   
   // Gather form inputs
   const vehicleId = document.getElementById("vehicleId").value.trim();
+  const vehicleModel = document.getElementById("vehicleModel").value.trim();
+  const manufacturer = document.getElementById("manufacturer").value.trim();
+  const year = document.getElementById("year").value;
+  const driverId = document.getElementById("driverId").value.trim();
   const latitude = parseFloat(document.getElementById("latitude").value);
   const longitude = parseFloat(document.getElementById("longitude").value);
   const fuelLevel = parseFloat(document.getElementById("fuelLevel").value);
+  const batteryVoltage = parseFloat(document.getElementById("batteryVoltage").value);
+  const vehicleLoad = parseFloat(document.getElementById("vehicleLoad").value) || 0;
+  const engineSpeed = parseFloat(document.getElementById("engineSpeed").value) || 0;
+  const temperature = parseFloat(document.getElementById("temperature").value) || 0;
+  const tirePressureFrontLeft = parseFloat(document.getElementById("tirePressureFrontLeft").value) || 0;
+  const tirePressureFrontRight = parseFloat(document.getElementById("tirePressureFrontRight").value) || 0;
+  const tirePressureRearLeft = parseFloat(document.getElementById("tirePressureRearLeft").value) || 0;
+  const tirePressureRearRight = parseFloat(document.getElementById("tirePressureRearRight").value) || 0;
+  const tireTempFrontLeft = parseFloat(document.getElementById("tireTempFrontLeft").value) || 0;
+  const tireTempFrontRight = parseFloat(document.getElementById("tireTempFrontRight").value) || 0;
+  const tireTempRearLeft = parseFloat(document.getElementById("tireTempRearLeft").value) || 0;
+  const tireTempRearRight = parseFloat(document.getElementById("tireTempRearRight").value) || 0;
+  const odometer = parseFloat(document.getElementById("odometer").value) || 0;
+  const engineHours = parseFloat(document.getElementById("engineHours").value) || 0;
+  const oilPressure = parseFloat(document.getElementById("oilPressure").value) || 0;
+  const tripsPerformed = parseInt(document.getElementById("tripsPerformed").value) || 0;
+  const totalTripTime = parseInt(document.getElementById("totalTripTime").value) || 0;
+  const tripID = document.getElementById("tripID").value.trim();
+  const nextMaintenanceDate = document.getElementById("nextMaintenanceDate").value;
+  const tireChange = document.getElementById("tireChange").checked;
   
-  // Set default values for additional parameters
+  // Build vehicle data object
   const vehicleData = {
+    vehicleModel,
+    manufacturer,
+    year,
+    driverId,
     gps: {
-      latitude: latitude,
-      longitude: longitude
+      latitude,
+      longitude
     },
-    fuelLevel: fuelLevel,
-    batteryVoltage: 12.0,
-    vehicleLoad: 1000,
-    engineSpeed: 2000,
-    temperature: 80,
+    fuelLevel,
+    batteryVoltage,
+    vehicleLoad,
+    engineSpeed,
+    temperature,
     tirePressure: {
-      front_left: 32,
-      front_right: 32,
-      rear_left: 30,
-      rear_right: 30
+      front_left: tirePressureFrontLeft,
+      front_right: tirePressureFrontRight,
+      rear_left: tirePressureRearLeft,
+      rear_right: tirePressureRearRight
     },
-    tireChange: false,
-    tripsPerformed: 0,
-    totalTripTime: 0,
-    tripID: "N/A"
+    tireTemperature: {
+      front_left: tireTempFrontLeft,
+      front_right: tireTempFrontRight,
+      rear_left: tireTempRearLeft,
+      rear_right: tireTempRearRight
+    },
+    odometer,
+    engineHours,
+    oilPressure,
+    tripsPerformed,
+    totalTripTime,
+    tripID,
+    nextMaintenanceDate,
+    tireChange
   };
   
   // Create a new node under /vehicles/<vehicleId>
@@ -61,16 +99,15 @@ simulateUpdateBtn.addEventListener("click", () => {
       return;
     }
     
-    // For each vehicle, simulate a random change
+    // For each vehicle, simulate random updates
     Object.keys(vehicles).forEach((vehicleId) => {
       const currentData = vehicles[vehicleId];
       
-      // Simulate a random fuel drop (1-5%) and minor GPS changes
+      // Random updates: decrease fuel by 1-5%, adjust GPS slightly
       const newFuelLevel = Math.max(0, currentData.fuelLevel - (Math.floor(Math.random() * 5) + 1));
       const newLatitude = currentData.gps.latitude + (Math.random() * 0.001 - 0.0005);
       const newLongitude = currentData.gps.longitude + (Math.random() * 0.001 - 0.0005);
       
-      // Update the vehicle data
       const vehicleRefUpdate = ref(database, "vehicles/" + vehicleId);
       update(vehicleRefUpdate, {
         fuelLevel: newFuelLevel,
