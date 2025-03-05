@@ -1,29 +1,31 @@
 import { database } from "./firebase.js";
 import { ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-// Fix Sidebar Navigation Issue
-document.querySelectorAll(".nav-link").forEach(tab => {
-  tab.addEventListener("click", function () {
-    document.querySelectorAll(".nav-link").forEach(t => t.classList.remove("active"));
-    this.classList.add("active");
-  });
-});
+// Fix Tab Switching Issue
+document.addEventListener("DOMContentLoaded", function () {
+  const tabLinks = document.querySelectorAll(".trip-tab");
+  const liveTripsSection = document.getElementById("liveTripsSection");
+  const upcomingTripsSection = document.getElementById("upcomingTripsSection");
+  const scheduleTripSection = document.getElementById("scheduleTripSection");
 
-// Tab Switching Logic
-document.querySelectorAll(".trip-tab").forEach(tab => {
-  tab.addEventListener("click", function (event) {
-    event.preventDefault();
+  tabLinks.forEach((tab) => {
+    tab.addEventListener("click", function (event) {
+      event.preventDefault();
 
-    document.querySelectorAll(".trip-tab").forEach(t => t.classList.remove("active"));
-    this.classList.add("active");
+      // Remove active class from all tabs
+      tabLinks.forEach((t) => t.classList.remove("active"));
+      this.classList.add("active");
 
-    document.getElementById("liveTripsSection").classList.add("d-none");
-    document.getElementById("upcomingTripsSection").classList.add("d-none");
-    document.getElementById("scheduleTripSection").classList.add("d-none");
+      // Hide all sections
+      liveTripsSection.classList.add("d-none");
+      upcomingTripsSection.classList.add("d-none");
+      scheduleTripSection.classList.add("d-none");
 
-    if (this.id === "liveTripsTab") document.getElementById("liveTripsSection").classList.remove("d-none");
-    if (this.id === "upcomingTripsTab") document.getElementById("upcomingTripsSection").classList.remove("d-none");
-    if (this.id === "scheduleTripTab") document.getElementById("scheduleTripSection").classList.remove("d-none");
+      // Show the selected section
+      if (this.id === "liveTripsTab") liveTripsSection.classList.remove("d-none");
+      if (this.id === "upcomingTripsTab") upcomingTripsSection.classList.remove("d-none");
+      if (this.id === "scheduleTripTab") scheduleTripSection.classList.remove("d-none");
+    });
   });
 });
 
@@ -43,12 +45,28 @@ onValue(vehiclesRef, (snapshot) => {
   });
 });
 
-// Load Trips
+// Schedule Trip
+document.getElementById("scheduleTripForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const newTripRef = push(ref(database, "trips"));
+  set(newTripRef, {
+    start: document.getElementById("startLocation").value,
+    destination: document.getElementById("destination").value,
+    date: document.getElementById("tripDate").value,
+    vehicle: vehicleSelect.value,
+  });
+
+  alert("Trip Scheduled Successfully!");
+  document.getElementById("scheduleTripForm").reset();
+});
+
+// Load Live & Upcoming Trips
 const upcomingTripsList = document.getElementById("upcomingTripsList");
 const tripsRef = ref(database, "trips");
 
 onValue(tripsRef, (snapshot) => {
-  upcomingTripsList.innerHTML = "";
+  upcomingTripsList.innerHTML = "<h5>No Upcoming Trips</h5>";
 
   if (!snapshot.exists()) return;
   const trips = snapshot.val();
