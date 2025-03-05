@@ -1,44 +1,87 @@
-/* File: js/index.js */
 import { database } from "./firebase.js";
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-// Suppose we have "vehicles" data in DB
+// Firebase References
 const vehiclesRef = ref(database, "vehicles");
+const tripsRef = ref(database, "trips");
 
-// Example real-time listener for "vehicles"
+// Get Elements
+const totalVehiclesEl = document.getElementById("totalVehicles");
+const vehiclesAvailableEl = document.getElementById("vehiclesAvailable");
+const vehiclesEnRouteEl = document.getElementById("vehiclesEnRoute");
+
+// Initialize Map
+let map;
+let markers = [];
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 20.5937, lng: 78.9629 }, // Default to India
+    zoom: 5
+  });
+}
+
+// Load Vehicles Data
 onValue(vehiclesRef, (snapshot) => {
-  const vehiclesData = snapshot.val() || {};
-
-  // 1. Total vehicles
-  const totalVehicles = Object.keys(vehiclesData).length;
-
-  // 2. Vehicles Available / En Route
-  // For simplicity, let's assume if "fuelLevel" > 50 => "Available", else "En Route" 
-  // (You can define your own logic based on the data.)
-  let vehiclesAvailable = 0;
+  const vehicles = snapshot.val() || {};
+  const totalVehicles = Object.keys(vehicles).length;
+  let availableVehicles = totalVehicles;
   let vehiclesEnRoute = 0;
 
-  Object.keys(vehiclesData).forEach((vehicleKey) => {
-    const v = vehiclesData[vehicleKey];
-    if (v.fuelLevel > 50) {
-      vehiclesAvailable++;
-    } else {
-      vehiclesEnRoute++;
-    }
-  });
+  // Clear old markers
+  markers.forEach(marker => marker.setMap(null));
+  markers = [];
 
-  // 3. Maintenance Alerts
-  // For example, if "tireChange" == true => consider it an alert
-  let maintenanceAlerts = 0;
-  Object.keys(vehiclesData).forEach((vehicleKey) => {
-    if (vehiclesData[vehicleKey].tireChange === true) {
-      maintenanceAlerts++;
+  Object.keys(vehicles).forEach((vehicleId) => {
+    const vehicle = vehicles[vehicleId];
+
+    // Check if vehicle is on a live trip
+    if (vehicle.tripAssigned) {
+      vehiclesEnRoute++;
+      availableVehicles--;
+    }
+
+    // Place marker on map
+    if (vehicle.gps) {
+      const marker = new google.maps.Marker({
+        position: { lat: vehicle.gps.latitude, lng: vehicle.gps.longitude },
+        map: map,
+        title: `Vehicle: ${vehicleId}`
+      });
+
+      // Show info when hovered
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<strong>Vehicle:</strong> ${vehicleId}<br><strong>Location:</strong> ${vehicle.gps.latitude}, ${vehicle.gps.longitude}`
+      });
+
+      marker.addListener("mouseover", () => infoWindow.open(map, marker));
+      marker.addListener("mouseout", () => infoWindow.close());
+
+      markers.push(marker);
     }
   });
 
   // Update DOM
-  document.getElementById("totalVehicles").textContent = totalVehicles;
-  document.getElementById("vehiclesAvailable").textContent = vehiclesAvailable;
-  document.getElementById("vehiclesEnRoute").textContent = vehiclesEnRoute;
-  document.getElementById("maintenanceAlerts").textContent = maintenanceAlerts;
+  totalVehiclesEl.textContent = totalVehicles;
+  vehiclesAvailableEl.textContent = availableVehicles;
+  vehiclesEnRouteEl.textContent = vehiclesEnRoute;
 });
+
+// Auto-move Scheduled Trips to Live Trips
+onValue(tripsRef, (snapshot) => {
+  if (!snapshot.exists()) return;
+  const trips = snapshot.val();
+  const today = new Date().toISOString().split("T")[0];
+
+  Object.keys(trips).forEach((tripId) => {
+    const trip = trips[tripId];
+
+    if (trip.date === today) {
+      update(ref(database, `vehicles/${trip.vehicle}`), { tripAssigned: true });
+      update(ref(database, `trips/${tripId}`), { status: "live" });
+    }
+  });
+});
+
+// Initialize the map
+window.onload = initMap;
