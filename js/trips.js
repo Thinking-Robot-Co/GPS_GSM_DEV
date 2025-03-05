@@ -1,43 +1,53 @@
 import { database } from "./firebase.js";
-import { ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
-
-const tabLinks = document.querySelectorAll(".nav-link");
-
-// Sections
-const liveTripsSection = document.getElementById("liveTripsSection");
-const upcomingTripsSection = document.getElementById("upcomingTripsSection");
-const scheduleTripSection = document.getElementById("scheduleTripSection");
+import { ref, onValue, push, set, remove } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
 // Tab Switching Logic
-tabLinks.forEach((tab) => {
+document.querySelectorAll(".trip-tab").forEach(tab => {
   tab.addEventListener("click", function (event) {
     event.preventDefault();
 
-    tabLinks.forEach((t) => t.classList.remove("active"));
+    document.querySelectorAll(".trip-tab").forEach(t => t.classList.remove("active"));
     this.classList.add("active");
 
-    liveTripsSection.classList.add("d-none");
-    upcomingTripsSection.classList.add("d-none");
-    scheduleTripSection.classList.add("d-none");
+    document.getElementById("liveTripsSection").classList.add("d-none");
+    document.getElementById("upcomingTripsSection").classList.add("d-none");
+    document.getElementById("scheduleTripSection").classList.add("d-none");
 
-    if (this.id === "liveTripsTab") liveTripsSection.classList.remove("d-none");
-    else if (this.id === "upcomingTripsTab") upcomingTripsSection.classList.remove("d-none");
-    else if (this.id === "scheduleTripTab") scheduleTripSection.classList.remove("d-none");
+    if (this.id === "liveTripsTab") document.getElementById("liveTripsSection").classList.remove("d-none");
+    if (this.id === "upcomingTripsTab") document.getElementById("upcomingTripsSection").classList.remove("d-none");
+    if (this.id === "scheduleTripTab") document.getElementById("scheduleTripSection").classList.remove("d-none");
   });
 });
 
-// Load Live & Upcoming Trips
-const liveTripsList = document.getElementById("liveTripsList");
-const upcomingTripsList = document.getElementById("upcomingTripsList");
+// Load Available Vehicles
+const vehicleSelect = document.getElementById("vehicleSelect");
+const vehiclesRef = ref(database, "vehicles");
 
-onValue(ref(database, "trips"), (snapshot) => {
-  liveTripsList.innerHTML = "<h5>No Live Trips</h5>";
+function updateAvailableVehicles() {
+  onValue(vehiclesRef, (snapshot) => {
+    vehicleSelect.innerHTML = "";
+    if (!snapshot.exists()) return;
+
+    const vehicles = snapshot.val();
+    Object.keys(vehicles).forEach(vehicleId => {
+      if (!vehicles[vehicleId].tripAssigned) {
+        vehicleSelect.innerHTML += `<option value="${vehicleId}">${vehicleId}</option>`;
+      }
+    });
+  });
+}
+
+// Load Trips
+const upcomingTripsList = document.getElementById("upcomingTripsList");
+const tripsRef = ref(database, "trips");
+
+onValue(tripsRef, (snapshot) => {
   upcomingTripsList.innerHTML = "<h5>No Upcoming Trips</h5>";
 
   if (!snapshot.exists()) return;
-
   const trips = snapshot.val();
-  Object.keys(trips).forEach((tripId) => {
+
+  Object.keys(trips).forEach(tripId => {
     const trip = trips[tripId];
     const tripHtml = `
       <div class="card p-3 mb-2">
@@ -45,33 +55,20 @@ onValue(ref(database, "trips"), (snapshot) => {
         <p><strong>Vehicle:</strong> ${trip.vehicle}</p>
         <p><strong>From:</strong> ${trip.start} → <strong>To:</strong> ${trip.destination}</p>
         <p><strong>Date:</strong> ${trip.date}</p>
+        <button class="btn btn-danger cancel-trip" data-trip="${tripId}">Cancel Trip</button>
       </div>`;
 
-    if (new Date(trip.date) > new Date()) {
-      upcomingTripsList.innerHTML += tripHtml;
-    } else {
-      liveTripsList.innerHTML += tripHtml;
-    }
+    upcomingTripsList.innerHTML += tripHtml;
   });
-});
 
-// Prevent Past Dates
-const tripDateInput = document.getElementById("tripDate");
-const today = new Date().toISOString().split("T")[0];
-tripDateInput.setAttribute("min", today);
-
-// Load Available Vehicles
-const vehicleSelect = document.getElementById("vehicleSelect");
-
-onValue(ref(database, "vehicles"), (snapshot) => {
-  vehicleSelect.innerHTML = "";
-  if (!snapshot.exists()) return;
-  const vehicles = snapshot.val();
-
-  Object.keys(vehicles).forEach((vehicleId) => {
-    if (!vehicles[vehicleId].tripAssigned) {
-      vehicleSelect.innerHTML += `<option value="${vehicleId}">${vehicleId}</option>`;
-    }
+  document.querySelectorAll(".cancel-trip").forEach(button => {
+    button.addEventListener("click", function () {
+      const tripId = this.dataset.trip;
+      remove(ref(database, `trips/${tripId}`)).then(() => {
+        alert("Trip canceled successfully!");
+        updateAvailableVehicles();
+      });
+    });
   });
 });
 
@@ -83,10 +80,13 @@ document.getElementById("scheduleTripForm").addEventListener("submit", (e) => {
   set(newTripRef, {
     start: document.getElementById("startLocation").value,
     destination: document.getElementById("destination").value,
-    date: tripDateInput.value,
+    date: document.getElementById("tripDate").value,
     vehicle: vehicleSelect.value,
   });
 
   alert("Trip Scheduled Successfully!");
   document.getElementById("scheduleTripForm").reset();
+  updateAvailableVehicles();
 });
+
+updateAvailableVehicles();
