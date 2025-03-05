@@ -10,16 +10,16 @@ const totalVehiclesEl = document.getElementById("totalVehicles");
 const vehiclesAvailableEl = document.getElementById("vehiclesAvailable");
 const vehiclesEnRouteEl = document.getElementById("vehiclesEnRoute");
 
-// Initialize Map
-let map;
-let markers = [];
+// Initialize Leaflet Map
+const map = L.map("map").setView([20.5937, 78.9629], 5); // Default to India
 
-function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 20.5937, lng: 78.9629 }, // Default to India
-    zoom: 5
-  });
-}
+// Add OpenStreetMap tiles
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(map);
+
+// Track vehicle markers
+let markers = {};
 
 // Load Vehicles Data
 onValue(vehiclesRef, (snapshot) => {
@@ -29,8 +29,9 @@ onValue(vehiclesRef, (snapshot) => {
   let vehiclesEnRoute = 0;
 
   // Clear old markers
-  markers.forEach(marker => marker.setMap(null));
-  markers = [];
+  Object.keys(markers).forEach((id) => {
+    map.removeLayer(markers[id]);
+  });
 
   Object.keys(vehicles).forEach((vehicleId) => {
     const vehicle = vehicles[vehicleId];
@@ -43,25 +44,14 @@ onValue(vehiclesRef, (snapshot) => {
 
     // Place marker on map
     if (vehicle.gps) {
-      const marker = new google.maps.Marker({
-        position: { lat: vehicle.gps.latitude, lng: vehicle.gps.longitude },
-        map: map,
-        title: `Vehicle: ${vehicleId}`
-      });
+      const marker = L.marker([vehicle.gps.latitude, vehicle.gps.longitude]).addTo(map)
+        .bindPopup(`<b>Vehicle:</b> ${vehicleId}<br><b>Location:</b> ${vehicle.gps.latitude}, ${vehicle.gps.longitude}`);
 
-      // Show info when hovered
-      const infoWindow = new google.maps.InfoWindow({
-        content: `<strong>Vehicle:</strong> ${vehicleId}<br><strong>Location:</strong> ${vehicle.gps.latitude}, ${vehicle.gps.longitude}`
-      });
-
-      marker.addListener("mouseover", () => infoWindow.open(map, marker));
-      marker.addListener("mouseout", () => infoWindow.close());
-
-      markers.push(marker);
+      markers[vehicleId] = marker;
     }
   });
 
-  // Update DOM
+  // Update dashboard values
   totalVehiclesEl.textContent = totalVehicles;
   vehiclesAvailableEl.textContent = availableVehicles;
   vehiclesEnRouteEl.textContent = vehiclesEnRoute;
@@ -82,6 +72,3 @@ onValue(tripsRef, (snapshot) => {
     }
   });
 });
-
-// Initialize the map
-window.onload = initMap;
