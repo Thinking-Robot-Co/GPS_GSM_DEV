@@ -1,4 +1,3 @@
-<!-- File: trips.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,11 +6,7 @@
   <title>Fleet Management - Trips</title>
 
   <!-- Bootstrap CSS -->
-  <link 
-    rel="stylesheet" 
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-  />
-  <!-- Custom CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -20,20 +15,6 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="index.html">Fleet Management</a>
-      <button 
-        class="navbar-toggler" 
-        type="button" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#navbarSupportedContent" 
-        aria-controls="navbarSupportedContent" 
-        aria-expanded="false" 
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <!-- optional right-side nav -->
-      </div>
     </div>
   </nav>
 
@@ -45,34 +26,77 @@
           <a class="nav-link" href="index.html">Dashboard</a>
           <a class="nav-link" href="vehicles.html">Vehicles</a>
           <a class="nav-link active" href="trips.html">Trips</a>
-          <a class="nav-link" href="maintenance.html">Maintenance</a>
-          <a class="nav-link" href="history.html">History</a>
           <a class="nav-link" href="admin.html">Admin</a>
-
         </div>
       </nav>
 
       <!-- MAIN CONTENT -->
       <main class="col-md-10 main-content">
         <h1 class="mb-4">Trips</h1>
-        
-        <div id="tripList">
-          <!-- Example trip list or scheduling UI goes here -->
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" id="liveTripsTab" href="#">Live Trips</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="upcomingTripsTab" href="#">Upcoming Trips</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="scheduleTripTab" href="#">Schedule Trip</a>
+          </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+          <!-- Live Trips Section -->
+          <div id="liveTripsSection">
+            <h3>Live Trips</h3>
+            <div id="liveTripsList"></div>
+          </div>
+
+          <!-- Upcoming Trips Section -->
+          <div id="upcomingTripsSection" class="d-none">
+            <h3>Upcoming Trips</h3>
+            <div id="upcomingTripsList"></div>
+          </div>
+
+          <!-- Schedule Trip Section -->
+          <div id="scheduleTripSection" class="d-none">
+            <h3>Schedule a New Trip</h3>
+            <form id="scheduleTripForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="startLocation" class="form-label">Starting Location</label>
+                  <input type="text" class="form-control" id="startLocation" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="destination" class="form-label">Destination</label>
+                  <input type="text" class="form-control" id="destination" required>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="tripDate" class="form-label">Trip Date</label>
+                  <input type="date" class="form-control" id="tripDate" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="vehicleSelect" class="form-label">Select Vehicle</label>
+                  <select class="form-control" id="vehicleSelect" required>
+                    <option value="">Loading available vehicles...</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Schedule Trip</button>
+            </form>
+          </div>
         </div>
       </main>
     </div>
   </div>
 
-  <div class="footer">
-    <small>&copy; 2025 Fleet Management</small>
-  </div>
-
-  <!-- Bootstrap JS -->
-  <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
-  </script>
-
-  <!-- Firebase + trips.js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module" src="js/trips.js"></script>
 </body>
 </html>
