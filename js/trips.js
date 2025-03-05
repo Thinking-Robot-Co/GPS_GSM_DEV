@@ -1,34 +1,35 @@
 import { database } from "./firebase.js";
 import { ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-const liveTripsTab = document.getElementById("liveTripsTab");
-const upcomingTripsTab = document.getElementById("upcomingTripsTab");
-const scheduleTripTab = document.getElementById("scheduleTripTab");
+const tabLinks = document.querySelectorAll(".nav-link");
 
+// Sections
 const liveTripsSection = document.getElementById("liveTripsSection");
 const upcomingTripsSection = document.getElementById("upcomingTripsSection");
 const scheduleTripSection = document.getElementById("scheduleTripSection");
 
+// Tab Switching Logic
+tabLinks.forEach((tab) => {
+  tab.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    tabLinks.forEach((t) => t.classList.remove("active"));
+    this.classList.add("active");
+
+    liveTripsSection.classList.add("d-none");
+    upcomingTripsSection.classList.add("d-none");
+    scheduleTripSection.classList.add("d-none");
+
+    if (this.id === "liveTripsTab") liveTripsSection.classList.remove("d-none");
+    else if (this.id === "upcomingTripsTab") upcomingTripsSection.classList.remove("d-none");
+    else if (this.id === "scheduleTripTab") scheduleTripSection.classList.remove("d-none");
+  });
+});
+
+// Load Live & Upcoming Trips
 const liveTripsList = document.getElementById("liveTripsList");
 const upcomingTripsList = document.getElementById("upcomingTripsList");
 
-const scheduleTripForm = document.getElementById("scheduleTripForm");
-const tripDateInput = document.getElementById("tripDate");
-const vehicleSelect = document.getElementById("vehicleSelect");
-
-// Switch Tabs
-liveTripsTab.addEventListener("click", () => showSection(liveTripsSection));
-upcomingTripsTab.addEventListener("click", () => showSection(upcomingTripsSection));
-scheduleTripTab.addEventListener("click", () => showSection(scheduleTripSection));
-
-function showSection(section) {
-  liveTripsSection.classList.add("d-none");
-  upcomingTripsSection.classList.add("d-none");
-  scheduleTripSection.classList.add("d-none");
-  section.classList.remove("d-none");
-}
-
-// Load Live Trips
 onValue(ref(database, "trips"), (snapshot) => {
   liveTripsList.innerHTML = "<h5>No Live Trips</h5>";
   upcomingTripsList.innerHTML = "<h5>No Upcoming Trips</h5>";
@@ -55,10 +56,13 @@ onValue(ref(database, "trips"), (snapshot) => {
 });
 
 // Prevent Past Dates
+const tripDateInput = document.getElementById("tripDate");
 const today = new Date().toISOString().split("T")[0];
 tripDateInput.setAttribute("min", today);
 
 // Load Available Vehicles
+const vehicleSelect = document.getElementById("vehicleSelect");
+
 onValue(ref(database, "vehicles"), (snapshot) => {
   vehicleSelect.innerHTML = "";
   if (!snapshot.exists()) return;
@@ -72,7 +76,7 @@ onValue(ref(database, "vehicles"), (snapshot) => {
 });
 
 // Schedule Trip
-scheduleTripForm.addEventListener("submit", (e) => {
+document.getElementById("scheduleTripForm").addEventListener("submit", (e) => {
   e.preventDefault();
 
   const newTripRef = push(ref(database, "trips"));
@@ -84,5 +88,5 @@ scheduleTripForm.addEventListener("submit", (e) => {
   });
 
   alert("Trip Scheduled Successfully!");
-  scheduleTripForm.reset();
+  document.getElementById("scheduleTripForm").reset();
 });
